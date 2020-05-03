@@ -1,0 +1,77 @@
+快速排序：快速排序是冒泡排序的改进版，是目前已知的最快,比较次数最少的排序方法。快排平均时间复杂度O(nlogn),
+优点:极快，数据移动少.				缺点：不稳定
+最好的情况下：因为每次都将序列分为两个部分(一般二分都复杂度都和logN相关)，故为 O(N*logN)  
+最坏的情况下：对于挖坑填补法->基本有序时，退化为冒泡排序，几乎要比较N*N次，故为O(N*N)。对于区间分割法->若标准值恰好选到最大值或者最小值快排将失去优势。
+稳定性  由于每次都需要和中轴元素交换，因此原来的顺序就可能被打乱。如序列为 5 3 3 4 3 8 9 10 11会将3的顺序打乱。因此，快速排序是不稳定的！
+
+1.区域分割法：选择标准值为data[right],right = length -1; 找到比标准值小的放到data[nSmall],下表为nSmall处，left++,left==right，放入到data[nSmall];再采用递归直到范围left==right，排序结束。
+  int q_sort1(int * data, int left, int right)
+  {
+      /*index of standard value*/
+int nSmall = left - 1;
+ 
+      for(; left < right; left++){
+          /*find smaller value exchange with data[nSmall]*/
+          if(data[left] < data[right]){
+              if(++nSmall != left){
+                  data[nSmall] = data[nSmall]^data[left];
+                  data[left] = data[nSmall]^data[left];
+                  data[nSmall] = data[nSmall]^data[left];
+              }
+          }
+      }
+      /*input standard value data[right]*/
+      if(++nSmall != right){
+          data[nSmall] = data[nSmall]^data[right];
+          data[right] = data[nSmall]^data[right];
+          data[nSmall] = data[nSmall]^data[right];
+      }
+      return nSmall;
+  }
+  
+  void quick_sort(int * data, int left, int right)
+  {
+      if(NULL == data || left >= right)return;
+      int nstandard;
+      nstandard = q_sort1(data, left, right);
+ 
+      quick_sort(data, left, nstandard - 1);
+      quick_sort(data, nstandard + 1, right);
+  }
+
+2.挖坑填补法：选择标准值为key = data[left], j=right,i = left。先从后往前找到第一个比key小的值，放入data[i], 再从前向后找到第一个比key大的值放入到data[j],i++,j--;循环至i==j,放入标准值到data[i], 递归处理完成排序。
+   int q_sort2(int * data, int left, int right)
+   {
+       if(right < left)return -1;
+       int i = left;
+       int j = right;
+       int key = data[left];
+ 
+      while(i != j){
+          while(i < j && key <= data[j]){
+              j--;
+          }
+          data[i] = data[j];
+          while(i < j && key >= data[i]){
+              i++;
+          }
+          data[j] = data[i];
+      }
+      data[i] = key;
+      q_sort2(data, left, i - 1);
+      q_sort2(data, i+1, right);
+  }
+ 
+  int quicksort(int * data, int length)
+  {
+      q_sort1(data, 0, length-1);
+  }
+ 
+快排优化的问题：
+1.挖坑填补法中为什么不传数组长度反而是传递低下标和高下标？
+因为快排的核心思想是将数组分割成两部分，而这里所说的分割并不是真正的分割，而是分区间处理，因此通过传递数组的高低下标来区分空间。
+2.区间分割法相较于挖坑填补法来说，优化的点在哪里？
+操作系统对于while的中断处理相对较慢，因此避免这种中断可以提高操作系统效率，区间分割法采用while循环一次避免中断的方式来提高效率。
+3.如果标准值选择的是最小值，或者最大值，这样就失去了快排的意义，退回为冒泡排序，因此避免标准值选择为最小值和最大值是对于快排的第二个优化，取前中后三个下标，选择着三个下标所对应元素大小 取中间值作为标准值可以避免这种情况。（降低小概率事件）
+4.递归消耗栈的空间，无休止的递归具有不可控性，同时在函数跳转消耗时间 这种情况下 可以采用循环+栈的方式来处理。
+比较次数最少的 但是如果元素过少的时候 采用插入排序替代快排。Cn2 是插入排序的时间复杂度，当C的存在很大的影响n2时，说明元素个数过少。
