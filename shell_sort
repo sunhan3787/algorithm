@@ -1,0 +1,53 @@
+Shellsort 又称“缩小增量排序”，它是对插入排序的优化。
+基本思想：
+1.定步长，对数据进行分组；
+2.对每个组的子序列进行插入排序；
+
+优点：快，数据移动少； 
+缺点：不稳定，步长的取值是多少，应取多少个不同的值，都无法确切知道，只能凭经验来取。 
+最佳情况：原始序列中各个记录已经按照关键字有序排列 最好的时间复杂度为O（n）；
+平均时间复杂度O (n^1.3)
+使用场景：适用于中等规模数据记录序列的排序；
+
+希尔排序不稳定，为什么？
+ 	由于多次插入排序，我们知道一次插入排序是稳定的，不会改变相同元素的相对顺序，但在不同的插入排序过程中，相同的元素可能在各自的插入排序中移动，最后其稳定性就会被打乱，所以shell排序是不稳定的。
+
+例如对5,2,9,6,1,8,3,7这个数列进行shell 排序，过程如下：
+gap = 8/2 = 4;
+i = 4; j = i - gap = 0; 插入排序结果：1,2,9,6,5,8,3,7
+i = 5; j = 1; 插入排序结果：1,2,9,6,5,8,3,7
+i = 6; j = 2; 插入排序结果：1,2,3,6,5,8,9,7
+i = 7; j = 3; 插入排序结果：1,2,3,6,5,8,9,7
+gap = 4;排序完毕，插入排序结果：1,2,3,6,5,8,9,7
+gap = 2;插入排序结果：1,2,3,6,5,7,9,8
+gap = 2;插入排序结果：1,2,3,5,6,7,8,9
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int g_data[]={2,9,6,3,8,1,5,7,4};
+
+void shell_sort(int * data, int length)
+{
+    if(NULL == data || length <=0)return;
+    int gap = 0, i = 0, j = 0, temp = 0;
+    for(gap = length/2; gap >= 1; gap /=2){
+        for(i = gap; i < length; i++){
+            temp = data[i];
+            for(j = i - gap; j >=0 && temp < data[j]; j -= gap){
+                data[i] = data[j];
+            }
+            data[j + gap] = temp;
+        }
+    }
+}
+
+int main(void)
+{
+    int i;
+    shell_sort(g_data, sizeof(g_data)/sizeof(g_data[0]));
+    for(i = 0; i < sizeof(g_data)/sizeof(g_data[0]); i++){
+        printf("%d\n", g_data[i]);
+    }
+    return 0;
+}
