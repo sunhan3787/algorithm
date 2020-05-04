@@ -30,7 +30,7 @@ int g_data[]={2,9,6,3,8,1,5,7,4};
 void shell_sort(int * data, int length)
 {
     if(NULL == data || length <=0)return;
-    int gap = 0, i = 0, j = 0, temp = 0;
+    int gap = 0, i = 0, j = 0, temp;
     for(gap = length/2; gap >= 1; gap /=2){
         for(i = gap; i < length; i++){
             temp = data[i];
