@@ -1,0 +1,70 @@
+归并排序：采用了递归分治的思想。
+1.递归拆分成最小子序列，
+2.然后合并。
+把待排序列看成由两个有序的子序列，然后合并两个子序列 [子序列是由两个有序序列合并的]。
+归并排序的优缺点：归并排序是一种非就地排序，将需要与待排序序列一样多的辅助空间。在使用它对两个己有序的序列归并，将有无比的优势。其时间复杂度无论是在最好情况下还是在最坏情况下均是O(nlog2n)。对数据的有序性不敏感。若数据节点数据量大，那将不适合。但可改造成索引操作，效果将非常出色。 
+算法时间复杂度 计算
+T(1) = C；   n=1时，只需要常量级的执行时间，所以表示为C。
+T(n) = 2*T(n/2) + n； n>1
+
+T(n) = 2*T(n/2) + n
+     = 2*(2*T(n/4) + n/2) + n = 4*T(n/4) + 2*n
+     = 4*(2*T(n/8) + n/4) + 2*n = 8*T(n/8) + 3*n
+     = 8*(2*T(n/16) + n/8) + 3*n = 16*T(n/16) + 4*n
+     ......
+     = 2^k * T(n/2^k) + k * n
+     ......
+
+通过这样一步一步分解推导，我们可以得到 T(n) = 2^kT(n/2^k)+kn。当 T(n/2^k)=T(1) 时，也就是 n/2^k=1，我们得到 k=log2n 。
+我们将 k 值代入上面的公式，得到 T(n)=Cn+nlog2n 。如果我们用大O标记法来表示的话，T(n)就等于O(nlogn)。所以归并排序的时间复杂度是 O(nlogn)。
+
+最好的情况下：一趟归并需要n次，总共需要logN次，因此为O(N*logN) 
+最坏的情况下，接近于平均情况下，为O(N*logN) 
+说明：对长度为n的文件，需进行logN 趟二路归并，每趟归并的时间为O(n)，故其时间复杂度无论是在最好情况下还是在最坏情况下均是O(nlgn)。
+ 稳定性 ：归并排序最大的特色就是它是一种稳定的排序算法。归并过程中是不会改变元素的相对位置的。 
+缺点：它需要O(n)的额外空间。但是很适合于多链表排序。   如果不申请空间进行元素的保存 那就要在原数组进行交换 比较麻烦  至少需要三个标记时间复杂度不变
+应用场合：对于部分有序的数组来说 归并效率高  另一个场合  计算数组中的逆序对，如何计算的  拆分后 在合并过程中 只要有数据交换的过程  就说明有一个逆序对。
+
+void m_sort(int * data, int left, int right)
+{
+    int start1 = left;
+    int end1 = left + (right - left)/2;
+    int start2 = end1 + 1;
+    int end2 = right;
+    int * temp = NULL;
+    int index = 0;
+    temp = (int *)malloc(sizeof(int) * (right - left + 1));
+    if(NULL != temp){
+        while(start1 <= end1 && start2 <= end2){
+            if(data[start1] < data[start2]){
+                temp[index++] = data[start1++];
+            }else{
+                temp[index++] = data[start2++];
+            }
+        }
+
+        while(start1 <= end1){
+            temp[index++] = data[start1++];
+        }
+
+        while(start2 <= end2){
+            temp[index++] = data[start2++];
+        }
+
+        for(index = 0; index < (right - left +1); index++){
+            data[index + left] = temp[index];
+        }
+    }
+    free(temp);
+    temp = NULL;
+}
+
+void merge_sort(int * data, int start, int end)
+{
+    if(NULL == data || start >= end)return;
+    int mid;
+    mid = start + (end - start)/2;
+    merge_sort(data, start, mid);
+    merge_sort(data, mid + 1, end);
+    m_sort(data, start, end);
+}
