@@ -1,0 +1,117 @@
+kmp算法：在一个字符串(n)中寻找一个子串(m)第一个位置,返回pattern第一个字符在text中的位置。KMP的整体时间复杂度为O(m + n)
+适用场景比如：1，在一个字符串(n)中寻找一个子串(m)第一个位置的函数,；2，10G+的日志中，快速地查找关键字。
+步骤：
+1.计算前缀后缀最长公共元素长度：
+Pattern1:   “ababc” 
+前缀： a/ab/aba/abab;      
+后缀： c/bc/abc/babc;
+计算出前缀后缀最长公共元素长度为0
+Pattern2:   “abca”
+前缀： a/ab/abc;      
+后缀： a/ca/bca;
+计算出前缀后缀最长公共元素长度为1
+Pattern3:   “abcabc”
+前缀： a/ab/abc/abca/abcab;      
+后缀： c/bc/abc/cabc/bcabc;
+计算出前缀后缀最长公共元素长度为3
+2.create_next构建next数组，用来回溯
+代码：
+void make_next(const char * pattern, int * next)
+{
+	int q, k;
+	int m = strlen(pattern);
+
+	next[0] = 0;
+	for(q = 1, k = 0; q < m; q++){
+		while(k > 0 && pattern[q] != pattern[k]){
+			k = next[k-1];
+		}
+		if(pattern[q] == pattern[k]){
+			k++;
+		}
+		next[q] = k;
+	}
+}
+3.基于next数组进行匹配
+代码：
+int kmp(const char * text, const char * pattern, int * next)
+{
+	int i,q;
+	int n = strlen(text);
+	int m = strlen(pattern);
+	
+	make_next(pattern, next);
+	for(i = 0, q = 0; i < n; i++){
+		while(q > 0 && pattern[q] != text[i]){
+			q = next[q -1];
+		}
+
+		if(pattern[q] == text[i]){
+			q++;
+		}
+		if(q == m){
+			break;
+		}
+	}
+	return i-q+1;
+}
+
+
+Sunday算法： Sunday算法由Daniel M.Sunday在1990年提出。
+Sunday算法是从前往后匹配，在匹配失败时关注的是文本串中参加匹配的最末位字符的下一位字符。
+
+Sunday算法步骤：
+1.make_next 创建next数组，这个数组长度为256
+例如：Pattern = “will”, 
+next[‘w’] = 0; next[‘i’] = 1; next[‘l’] = 3;
+2.利用next数组进行字符串匹配：
+例如：Text = “widwlwillfwilldfsdf”
+如果匹配失败，进行跳转；跳转位置i = k + m - next[text[m + k]]
+i表示text数组下表位置； 
+k记录的是这次从text开始匹配匹配失败的下标位置；
+m是pattern字符串的长度；
+匹配成功返回i-j
+j是匹配成功pattern最后一个字符在pattern中的下标位置；
+
+Sunday算法代码：
+
+int * make_next(const char * pattern)
+{
+	int * pnext = NULL;
+	pnext = (int *)malloc(sizeof(int) * 256);
+	memset(pnext, -1,sizeof(int) * 256);
+	int i = 0;
+	while(i < strlen(pattern)){
+		pnext[pattern[i]] = i;
+		i++;
+	}
+	return pnext;
+}
+
+int sunday(const char * text, const char * pattern)
+{
+	if(NULL == text || NULL == pattern)return -1;
+	int i = 0, j = 0, k;
+	int * pnext = NULL;
+	pnext = make_next(pattern);
+	while(i < strlen(text) && j < strlen(pattern)){
+		k = i;
+		while(text[i] == pattern[j]){
+			i++;
+			j++;
+		}
+		if(j >= strlen(pattern)){
+			return i - j;
+		}
+		if((k + strlen(pattern)) < strlen(text)){
+			/*jump and continue match*/
+			i = k + strlen(pattern) - pnext[text[k + strlen(pattern)]];
+			j = 0;
+			printf("jump i == %d\n", i);
+		}else{
+			/*match failed*/
+			return -1;
+		}
+	}
+}
+
