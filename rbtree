@@ -130,7 +130,34 @@ rbtree_node *rbtree_delete(rbtree *T, rbtree_node *z) {
 	return y;
 }
 
-5.3、删除调整；当删除的节点是红色时直接删除，删除黑色节点是需要修复，也就是删除后的调整；以下几种情况默认删除的是黑色节点，并且以x轴心节点作为依据进行下面的调整操作。
+5.3、删除调整；当删除的节点y是红色时直接删除，删除黑色节点是需要修复，也就是删除后的调整；以下几种情况默认删除的是黑色节点，并且以x轴心节点作为依据进行下面的调整操作。
+删除后的调整修复大体上分为4种，实际上是8种，因为另外4种的思路相同只是在讨论x是左节点还是右节点, 下面的w 是x 的兄弟节点；
+5.3.1、w是红色：
+				w->color = BLACK;
+				x->parent->color = RED;
+				rbtree_left_rotate(T, x->parent);
+				w = x->parent->right;
+5.3.2、w是黑色，并且w的两个子节点也是黑色：
+				w->color = RED;
+				x = x->parent;
+5.3.3、w是黑色，并且w的左子节点是红色，右子节点是黑色：
+				w->left->color = BLACK;
+				w->color = RED;
+				rbtree_right_rotate(T, w);
+				w = x->parent->right;
+
+				w->color = x->parent->color;
+				x->parent->color = BLACK;
+				w->right->color = BLACK;
+				rbtree_left_rotate(T, x->parent);
+				x = T->root;
+5.3.4、w是黑色，并且w的右子节点是红色：
+				w->color = x->parent->color;
+				x->parent->color = BLACK;
+				w->right->color = BLACK;
+				rbtree_left_rotate(T, x->parent);
+				x = T->root;
+整体调整完后，x 设置为黑色。
 
 6、Search查找；
 rbtree_node *rbtree_search(rbtree *T, KEY_TYPE key) {
