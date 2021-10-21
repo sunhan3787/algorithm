@@ -13,6 +13,8 @@ typedef struct NODE
 	struct NODE*pLeft;
 	struct NODE* pRight;
 }TreeNode, *Tree;
+
+//辅助栈C代码实现
 typedef struct NODE1
 {
 	TreeNode*pTreeNode;
@@ -257,6 +259,7 @@ int CountLeaf(TreeNode *ptree)
 	return count;
 }
 
+//递归思想复制一颗二叉树
 void copy_binarytree(Tree t, Tree &tt){
 	if(t == NULL)return;
 	TreeNode* ptemp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -269,6 +272,7 @@ void copy_binarytree(Tree t, Tree &tt){
 	copy_binarytree(t->pRight, tt->pRight);
 }
 
+//递归思想比较两颗二叉树是否相等
 bool is_sametree(Tree t1, Tree t2){
 	bool same_left = false;
 
