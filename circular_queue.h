@@ -80,6 +80,7 @@ bool is_queue_empty(queue* q);
 3.1.find value is in queue cache data, 
 3.2.if in pop it and push it again
 3.3.if not, add new one, and out the one that not used to recently,
+
 ****************************************************/
 void lur_init();
 
