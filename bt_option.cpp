@@ -145,7 +145,7 @@ void PostTraverse(TreeNode *pTree)//后序遍历的完整路径
 	}
 }
 
-
+//层序遍历
 void LevelTraverse(TreeNode *pTree)
 {
 	printf("Level Traverse tree running...\n");
@@ -186,6 +186,7 @@ int Depth(TreeNode *pTree)
 	return nLeft>nRight?nLeft+1:nRight+1;
 }
 
+//非递归利用层序遍历交换各个节点左右子树
 void ChangeChild(TreeNode *pTree)
 {
 	if(pTree==NULL)return;
@@ -209,6 +210,7 @@ void ChangeChild(TreeNode *pTree)
 
 }
 
+//递归思想统计树的所有节点，非递归在非递归遍历时统计
 //count tree node
 int CountTreeNode(TreeNode *ptree)
 {
@@ -222,6 +224,7 @@ int CountTreeNode(TreeNode *ptree)
 	}
 }
 
+//统计二叉树的叶子结点，采用递归思想，用静态全局变量实现
 static int res = 0;
 //count tree leaf
 void CountLeafTraverse(TreeNode *ptree)
@@ -234,21 +237,6 @@ void CountLeafTraverse(TreeNode *ptree)
 
 	CountLeafTraverse(ptree->pLeft);
 	CountLeafTraverse(ptree->pRight);
-}
-
-int CountLeaf_Rec(TreeNode *ptree)
-{
-	int n = 0;
-
-	if(ptree == NULL) return 0;
-
-	if((ptree->pLeft == NULL) && (ptree->pRight == NULL)){
-		n++;
-	}
-
-	n = CountLeaf_Rec(ptree->pLeft) + CountLeaf_Rec(ptree->pRight);
-
-	return n;
 }
 
 //分治思想
